@@ -5,13 +5,10 @@ import android.content.Intent
 
 object ActivityCounter {
 
-    private var _counter = 1
-    val counter: String
-        get() = _counter.toString()
-
-    fun startActivity(parent: Activity) {
-        _counter++
-
-        parent.startActivity(Intent(parent, MainActivity::class.java))
+    fun startActivity(parent: Activity, name: Int) {
+        parent.startActivity(Intent(parent, MainActivity::class.java)
+            .apply {
+                putExtra("counter", name + 1)
+            })
     }
 }
