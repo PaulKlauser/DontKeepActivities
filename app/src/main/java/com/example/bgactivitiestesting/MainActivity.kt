@@ -1,8 +1,5 @@
 package com.example.bgactivitiestesting
 
-import android.R.attr.data
-import android.app.Activity
-import android.app.ComponentCaller
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
@@ -11,7 +8,6 @@ import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.activity.viewModels
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
@@ -19,6 +15,7 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.dp
 import com.example.bgactivitiestesting.ui.theme.BgActivitiesTestingTheme
 import java.util.UUID
 
@@ -28,15 +25,11 @@ class MainActivity : ComponentActivity() {
     private var count = 0
     private lateinit var name: String
 
-    private val vm by viewModels<MainViewModel>()
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         count = intent.getIntExtra("counter", 0)
         name = "Activity #${count}"
         Log.d("Debug", "$name is created")
-
-        vm.init(name)
 
         enableEdgeToEdge()
         setContent {
@@ -44,31 +37,33 @@ class MainActivity : ComponentActivity() {
                 rememberLauncherForActivityResult(ActivityResultContracts.StartActivityForResult()) {
                     Log.d(
                         "Debug",
-                        "$name received activity result: ${it.resultCode}, ${it.data?.getStringExtra("result")}"
+                        "$name received activity result: ${it.resultCode}, ${
+                            it.data?.getStringExtra(
+                                "result"
+                            )
+                        }"
                     )
                 }
             BgActivitiesTestingTheme {
                 Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
                     Column(modifier = Modifier.padding(innerPadding)) {
+                        Text(
+                            text = name,
+                            modifier = Modifier.padding(16.dp)
+                        )
                         Button(
                             onClick = {
                                 val intent = Intent(this@MainActivity, MainActivity::class.java)
                                     .apply {
                                         putExtra("counter", count + 1)
                                     }
-//                                this@MainActivity.startActivityForResult(
-//                                    Intent(this@MainActivity, MainActivity::class.java)
-//                                        .apply {
-//                                            putExtra("counter", count + 1)
-//                                        },
-//                                    1)
                                 launcher.launch(intent)
                             },
-                            modifier = Modifier.padding(innerPadding)
+                            modifier = Modifier.padding(16.dp)
                         ) { Text("Start another activity") }
                         Button(
                             onClick = { map[UUID.randomUUID()] = ByteArray(10 * 1024 * 1024) },
-                            modifier = Modifier.padding(innerPadding)
+                            modifier = Modifier.padding(16.dp)
                         ) { Text("Allocate 10 MB") }
                         Button(
                             onClick = {
@@ -76,7 +71,8 @@ class MainActivity : ComponentActivity() {
                                     putExtra("result", "Result from $name")
                                 })
                                 finish()
-                            }
+                            },
+                            modifier = Modifier.padding(16.dp)
                         ) {
                             Text("Navigate back with result")
                         }
@@ -86,8 +82,20 @@ class MainActivity : ComponentActivity() {
         }
     }
 
+    override fun onResume() {
+        super.onResume()
+
+        Log.d("Debug", "$name is resuming")
+    }
+
+    override fun onPause() {
+        super.onPause()
+
+        Log.d("Debug", "$name is pausing")
+    }
+
     override fun onSaveInstanceState(outState: Bundle) {
-        vm.logSaveStateActivity(name)
+        Log.d("Debug", "$name is saving its state")
 
         super.onSaveInstanceState(outState)
     }
@@ -95,26 +103,7 @@ class MainActivity : ComponentActivity() {
     override fun onDestroy() {
         super.onDestroy()
 
-        vm.logDestroyedActivity(name, isFinishing)
+        Log.d("Debug", "$name has been destroyed")
     }
-
-    override fun onResume() {
-        super.onResume()
-
-        Log.d("Debug", "$name is resuming")
-    }
-
-//    override fun onActivityResult(
-//        requestCode: Int,
-//        resultCode: Int,
-//        data: Intent?,
-//        caller: ComponentCaller
-//    ) {
-//        super.onActivityResult(requestCode, resultCode, data, caller)
-//        Log.d(
-//            "Debug",
-//            "$name received activity result: $requestCode, $resultCode, ${data?.getStringExtra("result")}"
-//        )
-//    }
 
 }
