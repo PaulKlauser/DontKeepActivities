@@ -19,6 +19,13 @@ android {
     }
 
     buildTypes {
+        debug {
+            applicationIdSuffix = ".debug"
+        }
+        create("debug2") {
+            initWith(getByName("debug"))
+            applicationIdSuffix = ".debug2"
+        }
         release {
             isMinifyEnabled = false
             proguardFiles(

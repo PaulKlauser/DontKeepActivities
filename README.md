@@ -2,6 +2,34 @@
 
 This repo demonstrates the behavior of Android destroying Activity instances when memory pressure increases, to clarify behavior that is inconsistently documented and often misunderstood in the Android dev community. I also want to contrast the use of the "Don't Keep Activities" developer option with setting process limits as tools to find instances where your app is not properly saving state.
 
+## tl;dr
+As of 2014, Android *will* in-fact destroy Activity instances that are stopped but still on the backstack, *without* killing the app's process. This means that "Don't keep activities" *does represent* a valid testing state, **but you still shouldn't use it.**
+
+**"Background process limit" will catch *more* state issues than you will find with "Don't keep activities"**.
+
+## "Don't keep activities" vs "Background process limit"
+
+"Don't keep activities" might be a valid testing tool, but it's still not the best, and there is no benefit to choosing it over "Background process limit".
+
+### Opportunity
+Your app will experience process death with nearly every user, it's an extremely common scenario that's often overlooked. It's a matter of "when", not "if". However, not many, or even any, will experience the scenario that "Don't keep activities" represents.
+
+In order for your app's process to be killed, it has to be in the background, and as the user thumbs around other apps, the system will eventually kill your app to prioritize memory for others. Unless the user is very frequently going back to your app, or they've downloaded more RAM, your app's process *will* be killed.
+
+Contrast this to the scenario that "Don't keep activities" represents:
+
+* The app needs to have multiple Activities - This is getting less common with Jetpack Compose and a general push towards "single Activity" apps.
+* [The memory pressure needs to be created by the app's own Activity stack](https://cs.android.com/android/platform/superproject/main/+/main:frameworks/base/core/java/android/app/ActivityThread.java;l=8651;drc=61197364367c9e404c7da6900658f1b16c42d0da) - Other apps' memory usage doesn't impact Activity destruction, just your own, so there are less opportunities to create memory pressure to begin with.
+
+### Catching bugs
+Further, bugs caught by setting "Background process limit" are a *superset* of the bugs caught by "Don't keep activities". If you find a bug using "Don't keep activities", odds are, you would have found the same bug with "Background process limit". However, by only using "Don't keep activities", you may be missing bugs that *would* have otherwise been caught by testing process death.
+
+This is because of the scoping of the state that causes these types of bugs. Not keeping activities means that we will lose any state held in our Activity, but we will maintain state kept in our Application. 
+
+>**Finding an issue because we lost our Activity state *is* useful, but we also need to find issues caused by losing our Application state. Setting "Background process limit" will find both.**
+
+See the demo below to get more concrete with it.
+
 ## Timeline
 **MMM YYYY** (I don't know, the dawn of Android?) - "Don't Keep Activities" is added as a developer option.
 
