@@ -18,6 +18,22 @@ This repo demonstrates the behavior of Android destroying Activity instances whe
 **Oct 2025** - I see Abel's comment and sample project, validate that he's correct, tweak it, and create this repo as a guide for others that are rightfully confused by this mess.
 
 ## Demo
+
+### Activity Destruction
 <img width="1006" height="647" alt="image" src="https://github.com/user-attachments/assets/3b6c110c-5bca-4439-a0bf-6246b6157c2c" />
 
 Run the sample app, new up a few Activities, and start allocating memory. You'll see the Activities in the back stack get destroyed once you've increased memory pressure enough.
+
+### "Don't keep activities" vs "Background process limit"
+
+The "Counter Activity" options demonstrate why "Don't keep activities" isn't as effective as a debugging tool on modern Android apps as setting "Background process limit" is.
+
+`CounterAppStateActivity` - Stores the counter state at the **app** level in a singleton.
+
+`CounterViewModelStateActivity` - Stores the counter state in an **Activity-scoped** ViewModel.
+
+#### Don't keep activities
+Observe that with **"Don't keep activities"** set, incrementing the counter, navigating forward, and then back, *only* resets the counter in the `CounterViewModelStateActivity` example, and does **not** reset the counter in the `CounterAppStateActivity` example.
+
+#### Background process limit
+However, if you turn **off** "Don't keep activities", and instead set **"Background process limit"** to "No background processes", increment the counter, switch to another app (to force the system to kill your app's process), you'll notice the counter is not maintained in either example.

@@ -16,6 +16,8 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import com.example.bgactivitiestesting.counter.appstate.CounterAppStateActivity
+import com.example.bgactivitiestesting.counter.viewmodelstate.CounterViewModelStateActivity
 import com.example.bgactivitiestesting.ui.theme.BgActivitiesTestingTheme
 import java.util.UUID
 
@@ -61,10 +63,12 @@ class MainActivity : ComponentActivity() {
                             },
                             modifier = Modifier.padding(16.dp)
                         ) { Text("Start another activity") }
+
                         Button(
                             onClick = { map[UUID.randomUUID()] = ByteArray(10 * 1024 * 1024) },
                             modifier = Modifier.padding(16.dp)
                         ) { Text("Allocate 10 MB") }
+
                         Button(
                             onClick = {
                                 setResult(RESULT_OK, Intent().apply {
@@ -75,6 +79,32 @@ class MainActivity : ComponentActivity() {
                             modifier = Modifier.padding(16.dp)
                         ) {
                             Text("Navigate back with result")
+                        }
+
+                        Button(
+                            onClick = {
+                                startActivity(
+                                    Intent(
+                                        this@MainActivity,
+                                        CounterViewModelStateActivity::class.java
+                                    )
+                                )
+                            }, modifier = Modifier.padding(16.dp)
+                        ) {
+                            Text(text = "Start CounterViewModelStateActivity")
+                        }
+
+                        Button(
+                            onClick = {
+                                startActivity(
+                                    Intent(
+                                        this@MainActivity,
+                                        CounterAppStateActivity::class.java
+                                    )
+                                )
+                            }, modifier = Modifier.padding(16.dp)
+                        ) {
+                            Text(text = "Start CounterAppStateActivity")
                         }
                     }
                 }
