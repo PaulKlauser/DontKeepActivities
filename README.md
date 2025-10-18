@@ -16,3 +16,8 @@ This repo demonstrates the behavior of Android destroying Activity instances whe
 **June 2025** - [Abel leaves this comment in the original SO post that Dianne responded in](https://stackoverflow.com/questions/7536988/android-app-out-of-memory-issues-tried-everything-and-still-at-a-loss/79655927#79655927) explaining that everything is hecked, documentation is inconsistent, and Dianne's original answer is no longer valid in 2025.
 
 **Oct 2025** - I see Abel's comment and sample project, validate that he's correct, tweak it, and create this repo as a guide for others that are rightfully confused by this mess.
+
+## Demo
+<img width="1006" height="647" alt="image" src="https://github.com/user-attachments/assets/3b6c110c-5bca-4439-a0bf-6246b6157c2c" />
+
+Run the sample app, new up a few Activities, and start allocating memory. You'll see the Activities in the back stack get destroyed once you've increased memory pressure enough.
